@@ -14,17 +14,28 @@ class Game(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True) 
     created_at: Mapped[datetime] = mapped_column(default=db.func.current_timestamp())
     status: Mapped[str] = mapped_column(default='pending')
+    winner: Mapped[Optional[str]] = mapped_column(default=None)
 
     def toJson(self):  
        return {
             'id': self.id,
             'status': self.status,
-            'date': self.created_at
+            'date': self.created_at,
+            'winner': self.winner,
         } 
     
     ## Todo: should also return the Moves of the Game object
     def detailedToJson(self):
-       return "" 
+       moves = Move.query.filter(gameId = self.id).order_by(Move.created_at).all()
+       movesJson = [move.toJson() for move in moves]
+
+       return  {
+            'id': self.id,
+            'status': self.status,
+            'date': self.created_at,
+            'winner': self.winner,
+            'moves': movesJson,
+        } 
 class Move(db.Model):
     __tablename__ = 'moves'
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -32,6 +43,7 @@ class Move(db.Model):
     gameId: Mapped[int] = mapped_column(ForeignKey('games.id'))
     prevMoveId: Mapped[Optional[int]] = mapped_column(ForeignKey('moves.id'))
     nextMoveId: Mapped[Optional[int]] = mapped_column(ForeignKey('moves.id'))
+    player: Mapped[str] = mapped_column(default='X')
     coordX: Mapped[int]
     coordY: Mapped[int]
 
@@ -39,6 +51,7 @@ class Move(db.Model):
        return {
             'id': self.id,
             'gameId': self.gameId,
+            'player': self.player,
             'x': self.coordX,
             'y': self.coordY
         }
