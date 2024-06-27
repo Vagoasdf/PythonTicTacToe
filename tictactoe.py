@@ -31,8 +31,8 @@ def game_get(game_id):
 
 @app.post("/api/game/<game_id>/move")
 def game_move_post(game_id):
-    ##return makeMove(game_id, request.form['x'], request.form['y'])
-    response = {'message': 'Moving '+request.form['x']+request.form['y']}
+    response=  makeMove(game_id, int(request.form['x']), int(request.form['y']))
+
     return jsonify(response)
 
 def  getAllGames():
@@ -99,7 +99,12 @@ def makeMove(game_id, x, y):
         return 
 
     db.session.commit()
-    return game
+
+    response = {
+        'message': 'Moving '+request.form['x']+request.form['y'],
+        'game': game.detailedToJson()
+    }
+    return response
 
 def getGameFromDB(game_id):
     return {

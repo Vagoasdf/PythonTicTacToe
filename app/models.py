@@ -26,7 +26,7 @@ class Game(db.Model):
     
     ## Todo: should also return the Moves of the Game object
     def detailedToJson(self):
-       moves = Move.query.filter(gameId = self.id).order_by(Move.created_at).all()
+       moves = Move.query.filter(Move.gameId == self.id).order_by(Move.created_at).all()
        movesJson = [move.toJson() for move in moves]
 
        return  {
