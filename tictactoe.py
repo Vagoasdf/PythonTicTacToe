@@ -1,8 +1,16 @@
 from flask import Flask
 from flask import jsonify
 from flask import request
+from app.models import db, Game, Move
 
 app = Flask(__name__)
+# We're using sqlite so we dont need to worry about deploying a complete DB 
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///project.db"
+db.init_app(app)
+
+with app.app_context():
+    db.create_all()
+    
 
 @app.route("/")
 def hello_world():
