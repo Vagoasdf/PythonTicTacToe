@@ -55,4 +55,7 @@ class Move(db.Model):
             'x': self.coordX,
             'y': self.coordY
         }
+    
+    def checkInvalidMove(x,y,game):
+       return db.session.query(Move.id).filter_by(gameId=game.id, coordX=x, coordY=y).first() is not None
 
