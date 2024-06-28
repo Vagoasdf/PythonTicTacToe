@@ -3,6 +3,7 @@ from flask import jsonify
 from flask import request
 from app.models import db, Game, Move
 import json 
+import random
 
 app = Flask(__name__)
 # We're using sqlite so we dont need to worry about deploying a complete DB 
@@ -154,12 +155,16 @@ def haveVictory(board, player):
 
 
 def makeMoveComputer(game):
-    ## For Now, 1 to 1. 
-    ## Pending Implementation to check for collission
-    ##if Move.checkInvalidMove(x,y,game,):
+
+    validMove= False
+    while not validMove:
+        x=random.randint(0,2)
+        y=random.randint(0,2)
+        validMove = not Move.checkInvalidMove(x,y,game,)
+
     return  Move(
         gameId = game.id,
         player = 'O',
-        coordX = 1,
-        coordY = 1,
+        coordX = x,
+        coordY = y,
     )
