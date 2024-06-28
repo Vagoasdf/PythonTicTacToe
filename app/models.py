@@ -35,14 +35,28 @@ class Game(db.Model):
             'date': self.created_at,
             'winner': self.winner,
             'moves': movesJson,
+            'board': self.buildBoard()
         } 
+    
+    def buildBoard(self):
+       moves = Move.query.filter(Move.gameId == self.id).order_by(Move.created_at).all()
+       board = self.getBlankBoard()
+       for move in moves:
+           board[move.coordX][move.coordY] = move.player
+       return board
+    
+    def getBlankBoard(self):
+        return  [
+            ['-', '-', '-'],
+            ['-', '-', '-'],
+            ['-', '-', '-']
+        ]
+    
 class Move(db.Model):
     __tablename__ = 'moves'
     id: Mapped[int] = mapped_column(primary_key=True)
     created_at: Mapped[datetime] = mapped_column(default=db.func.current_timestamp())
     gameId: Mapped[int] = mapped_column(ForeignKey('games.id'))
-    prevMoveId: Mapped[Optional[int]] = mapped_column(ForeignKey('moves.id'))
-    nextMoveId: Mapped[Optional[int]] = mapped_column(ForeignKey('moves.id'))
     player: Mapped[str] = mapped_column(default='X')
     coordX: Mapped[int]
     coordY: Mapped[int]

@@ -2,7 +2,6 @@ from flask import Flask
 from flask import jsonify
 from flask import request
 from app.models import db, Game, Move
-import json 
 import random
 
 app = Flask(__name__)
@@ -71,7 +70,7 @@ def makeMove(game_id, x, y):
         return "Position already taken", 400
     
     AllMoves = db.session.query(Move).filter_by(gameId=game.id).order_by(Move.id).all()
-
+    board = game.buildBoard()
     newMovePlayer = Move(
         gameId = game.id,
         player = 'X',
@@ -81,7 +80,7 @@ def makeMove(game_id, x, y):
 
     db.session.add(newMovePlayer)
     AllMoves.append(newMovePlayer)
-    board = buildBoard(AllMoves)
+    addToBoard(board, newMovePlayer)
 
     ## check Victory
     if haveVictory(board, 'X'):
@@ -121,20 +120,6 @@ def buildResponse(game,board):
         'game': game.detailedToJson(),
         'board': board
     }
-def getBlankBoard():
-    return  [
-        ['-', '-', '-'],
-        ['-', '-', '-'],
-        ['-', '-', '-']
-    ]
-    
-
-def buildBoard(moves):
-    baseBoard = getBlankBoard()
-    for move in moves:
-        baseBoard[move.coordX][move.coordY] = move.player
-    return baseBoard
-    
 
 def addToBoard(board,move):
     board[move.coordX][move.coordY] = move.player
